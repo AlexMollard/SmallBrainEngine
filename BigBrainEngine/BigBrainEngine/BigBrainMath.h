@@ -1,0 +1,14 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
+#include "Libs/glm/glm/glm.hpp"
+#include "Libs/glm/glm/gtc/matrix_transform.hpp"
+#include "Libs/glm/glm/gtc/type_precision.hpp"
+#include "Libs/glm/glm/gtc/type_ptr.hpp"
+#include "Libs/glm/glm/gtc/noise.hpp"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <fstream>
+#include <vector>
