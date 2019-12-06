@@ -14,7 +14,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 // Camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(2.0f, 0.0f, 3.0f));
 float lastX = xRES / 2.0f;
 float lastY = yRES / 2.0f;
 bool firstMouse = true;
@@ -25,6 +25,8 @@ glm::mat4 view;
 
 int windowWidth, windowHeight;
 
+// lighting
+glm::vec3 lightPos(0.0f, 1.0f, 1.0f);
 
 int main(int argc)
 {
@@ -56,94 +58,101 @@ int main(int argc)
 	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 
 	// Get Shader
-	Shader shader("Basic.shader");
+	Shader shader("LightingShader.shader");
+	Shader lampShader("LightSource.shader");
 	Shapes3D* shapes3D = new Shapes3D();
 
-	// Get Textures
-	Texture texture("ImageTestOne.bmp");
-	Texture texture2("ImageTestTwo.bmp");
-
-	glm::vec3 cubePositions[] = 
-	{
-		glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(1.0f, 1.0f, -2.0f),
-		glm::vec3(2.0f, 2.0f, -4.0f)
-	};
-
-	unsigned int VBO, VAO;
-	glGenVertexArrays(1, &VAO);
+	// first, configure the cube's VAO (and VBO)
+	unsigned int VBO, cubeVAO;
+	glGenVertexArrays(1, &cubeVAO);
 	glGenBuffers(1, &VBO);
-
-	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(shapes3D->Cube), shapes3D->Cube, GL_STATIC_DRAW);
 
+	glBindVertexArray(cubeVAO);
+
 	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	// normal attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	// Need to add UVS back
+
+
+	unsigned int lightVAO;
+	glGenVertexArrays(1, &lightVAO);
+	glBindVertexArray(lightVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	// note that we update the lamp's position attribute's stride to reflect the updated buffer data
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	// color attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-	
-	// Texture attribute
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
-	shader.use();
-	shader.setInt("texture1", 0);
-	shader.setInt("texture2", 1);
-
-	projection = glm::mat4(1.0f);
-	projection = glm::perspective(glm::radians(45.0f), (float)xRES / (float)yRES, 0.1f, 100.0f);
-	shader.setMat4("projection", projection);
-
+	float rotation = 0.0f;
 	// If the window is not closed enable the engine loop
 	while (!Window_shouldClose())
 	{
 		processInput(Window);
 		Update_Window();
-		
-		// bind textures on corresponding texture units
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture.getID());
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2.getID());
 
+		// be sure to activate shader when setting uniforms/drawing objects
 		shader.use();
+		shader.setVec3("light.position", lightPos);
+		shader.setVec3("viewPos", camera.Position);
 
-		projection = glm::perspective(glm::radians(camera.Zoom), (float)windowWidth / (float)windowHeight, 0.1f, 100.0f);
+		// light properties
+		glm::vec3 lightColor;
+		lightColor.x = sin(glfwGetTime() * 2.0f);
+		lightColor.y = sin(glfwGetTime() * 0.7f);
+		lightColor.z = sin(glfwGetTime() * 1.3f);
+		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f); // decrease the influence
+		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // low influence
+		shader.setVec3("light.ambient", ambientColor);
+		shader.setVec3("light.diffuse", diffuseColor);
+		shader.setVec3("light.specular", glm::vec3( 1.0f, 1.0f, 1.0f));
+
+		// material properties
+		shader.setVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+		shader.setVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+		shader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f)); // specular lighting doesn't have full effect on this object's material
+		shader.setFloat("material.shininess", 32.0f);
+
+		// view/projection transformations
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)windowWidth / (float)windowHeight, 0.1f, 100.0f);
+		glm::mat4 view = camera.GetViewMatrix();
 		shader.setMat4("projection", projection);
-
-		view = camera.GetViewMatrix();
 		shader.setMat4("view", view);
 
-		// render boxes
-		glBindVertexArray(VAO);
-		for (unsigned int i = 0; i < cubePositions->length(); i++)
-		{
-			// calculate the model matrix for each object and pass it to shader before drawing
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, cubePositions[i]);
-			float angle = 22.0f * i;
+		// world transformation (Cube)
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0));
+		shader.setMat4("model", model);
 
-			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			
-			shader.setMat4("model", model);
-
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
+		// render the cube
+		glBindVertexArray(cubeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		
 
 
+		// Lamp object
+		lampShader.use();
+		lampShader.setMat4("projection", projection);
+		lampShader.setMat4("view", view);
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, lightPos);
+		model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
+		lampShader.setMat4("model", model);
 
-		glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+		glBindVertexArray(lightVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
-	glDeleteVertexArrays(1, &VAO);
+	glDeleteVertexArrays(1, &cubeVAO);
+	glDeleteVertexArrays(1, &lightVAO);
 	glDeleteBuffers(1, &VBO);
+
 	delete shapes3D;
 	// Destroy the window and free memory
 	Window_destroy();

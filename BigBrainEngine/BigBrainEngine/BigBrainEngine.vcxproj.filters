@@ -55,5 +55,8 @@
     <None Include="LightingShader.shader">
       <Filter>Resource Files\shaders</Filter>
     </None>
+    <None Include="LightSource.shader">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

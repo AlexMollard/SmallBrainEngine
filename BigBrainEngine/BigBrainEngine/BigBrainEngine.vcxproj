@@ -183,6 +183,7 @@
   <ItemGroup>
     <None Include="Basic.shader" />
     <None Include="LightingShader.shader" />
+    <None Include="LightSource.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
