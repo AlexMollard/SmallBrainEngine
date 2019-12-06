@@ -4,6 +4,7 @@
 Texture::Texture(std::string imgDIR)
 {
 	imageID = loadBMP_custom(imgDIR.c_str());
+	use();
 }
 
 Texture::~Texture()

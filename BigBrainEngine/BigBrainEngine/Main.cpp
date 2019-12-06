@@ -1,18 +1,36 @@
 #include "window.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Camera.h"
 
-#define xRES 800
-#define yRES 800
+// Default screen res 
+#define xRES 1000
+#define yRES 1000
 
+// Functions
 void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+
+// Camera
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+float lastX = xRES / 2.0f;
+float lastY = yRES / 2.0f;
+bool firstMouse = true;
+
+glm::mat4 model;
+glm::mat4 projection;
+glm::mat4 view;
+
+int windowWidth, windowHeight;
+
 
 int main(int argc)
 {
 	// Cjeck for Memory Leaks
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-
+	 
 	// Creating a window
 	if (!Window_intit(xRES, yRES, (char*)"Big Brain"))
 	{
@@ -22,6 +40,11 @@ int main(int argc)
 
 	// Allow openGL to resize contents of window
 	glfwSetFramebufferSizeCallback(Window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(Window, mouse_callback);
+	glfwSetScrollCallback(Window, scroll_callback);
+
+	windowWidth = xRES;
+	windowHeight = yRES;
 
 	// Initializing Glew
 	if (glewInit() != GLEW_OK)
@@ -34,37 +57,28 @@ int main(int argc)
 
 	// Get Shader
 	Shader shader("Basic.shader");
+	Shapes3D* shapes3D = new Shapes3D();
 
 	// Get Textures
 	Texture texture("ImageTestOne.bmp");
 	Texture texture2("ImageTestTwo.bmp");
 
-	float vertices[] = {
-		// positions          // colors           // texture coords
-		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
+	glm::vec3 cubePositions[] = 
+	{
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(1.0f, 1.0f, -2.0f),
+		glm::vec3(2.0f, 2.0f, -4.0f)
 	};
 
-	unsigned int indices[] = {
-	0, 1, 3, // first triangle
-	1, 2, 3  // second triangle
-	};
-
-	unsigned int VBO, VAO, EBO;
+	unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
 
 	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(shapes3D->Cube), shapes3D->Cube, GL_STATIC_DRAW);
 
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
@@ -78,23 +92,17 @@ int main(int argc)
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
-	texture.use();
-	texture2.use();
-
-	shader.use(); // don't forget to activate/use the shader before setting uniforms!
-	// either set it manually like so:
-	glUniform1i(glGetUniformLocation(shader.shaderProgram, "texture1"), 0);
-	// or set it via the texture class
+	shader.use();
+	shader.setInt("texture1", 0);
 	shader.setInt("texture2", 1);
 
-	float i = 0.0f;
-	glm::mat4 projection = glm::mat4(1.0f);
+	projection = glm::mat4(1.0f);
 	projection = glm::perspective(glm::radians(45.0f), (float)xRES / (float)yRES, 0.1f, 100.0f);
+	shader.setMat4("projection", projection);
 
 	// If the window is not closed enable the engine loop
 	while (!Window_shouldClose())
 	{
-		i += 50 * delta;
 		processInput(Window);
 		Update_Window();
 		
@@ -105,27 +113,38 @@ int main(int argc)
 		glBindTexture(GL_TEXTURE_2D, texture2.getID());
 
 		shader.use();
-		
-		// create transformations
-		glm::mat4 view = glm::mat4(1.0f);
-		glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-		model = glm::rotate(model, glm::radians(i), glm::vec3(1.0f, 0.5f, 0.0f));
-		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-		// retrieve the matrix uniform locations
-		unsigned int modelLoc = glGetUniformLocation(shader.shaderProgram, "model");
-		unsigned int viewLoc = glGetUniformLocation(shader.shaderProgram, "view");
-		// pass them to the shaders (3 different ways)
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-		// note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+
+		projection = glm::perspective(glm::radians(camera.Zoom), (float)windowWidth / (float)windowHeight, 0.1f, 100.0f);
 		shader.setMat4("projection", projection);
 
+		view = camera.GetViewMatrix();
+		shader.setMat4("view", view);
+
+		// render boxes
+		glBindVertexArray(VAO);
+		for (unsigned int i = 0; i < cubePositions->length(); i++)
+		{
+			// calculate the model matrix for each object and pass it to shader before drawing
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, cubePositions[i]);
+			float angle = 22.0f * i;
+
+			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			
+			shader.setMat4("model", model);
+
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+
+
+
 		glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+	delete shapes3D;
 	// Destroy the window and free memory
 	Window_destroy();
 
@@ -136,9 +155,45 @@ void processInput(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		camera.ProcessKeyboard(FORWARD, delta);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		camera.ProcessKeyboard(BACKWARD, delta);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		camera.ProcessKeyboard(LEFT, delta);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		camera.ProcessKeyboard(RIGHT, delta);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
+	glfwGetWindowSize(window, &width, &height);
+	windowWidth = width;
+	windowHeight = height;
+	projection = glm::perspective((float)glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
 	glViewport(0, 0, width, height);
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (firstMouse)
+	{
+		lastX = (float)xpos;
+		lastY = (float)ypos;
+		firstMouse = false;
+	}
+
+	float xoffset = (float)xpos - lastX;
+	float yoffset = lastY - (float)ypos;
+
+	lastX = (float)xpos;
+	lastY = (float)ypos;
+
+	camera.ProcessMouseMovement(xoffset, yoffset);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	camera.ProcessMouseScroll(yoffset);
 }

@@ -30,6 +30,12 @@
     <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -44,6 +50,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Basic.shader">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="LightingShader.shader">
       <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>
