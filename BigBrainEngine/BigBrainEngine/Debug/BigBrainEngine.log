@@ -1,18 +1,1 @@
-﻿  Main.cpp
-c:\users\alexm\documents\github\smallbrainengine\bigbrainengine\bigbrainengine\main.cpp(108): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-c:\users\alexm\documents\github\smallbrainengine\bigbrainengine\bigbrainengine\main.cpp(109): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-c:\users\alexm\documents\github\smallbrainengine\bigbrainengine\bigbrainengine\main.cpp(110): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-c:\users\alexm\documents\github\smallbrainengine\bigbrainengine\bigbrainengine\main.cpp(208): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-  BigBrainEngine.vcxproj -> C:\Users\alexm\Documents\GitHub\SmallBrainEngine\BigBrainEngine\Debug\BigBrainEngine.exe
+﻿  BigBrainEngine.vcxproj -> C:\Users\alexm\Documents\GitHub\SmallBrainEngine\BigBrainEngine\Debug\BigBrainEngine.exe

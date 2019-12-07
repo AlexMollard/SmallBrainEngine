@@ -2,6 +2,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Camera.h"
+#include <assimp/Importer.hpp>
 
 // Default screen res 
 #define xRES 1000
@@ -26,7 +27,7 @@ glm::mat4 view;
 int windowWidth, windowHeight;
 
 // lighting
-glm::vec3 lightPos(0.0f, 1.0f, 1.0f);
+glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 int main(int argc)
 {
@@ -58,10 +59,32 @@ int main(int argc)
 	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 
 	// Get Shader
-	Shader shader("LightingShader.shader");
+	Shader shader("BasicLightingShader.shader");
 	Shader lampShader("LightSource.shader");
+	Texture diffuseMap("Diffuse.bmp");
+	Texture specularMap("Specular.bmp");
 	Shapes3D* shapes3D = new Shapes3D();
 
+	// positions all containers
+	glm::vec3 cubePositions[] = {
+		glm::vec3(0.0f,  0.0f,  0.0f),
+		glm::vec3(2.0f,  5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f,  3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f,  2.0f, -2.5f),
+		glm::vec3(1.5f,  0.2f, -1.5f),
+		glm::vec3(-1.3f,  1.0f, -1.5f)
+	};
+	// positions of the point lights
+	glm::vec3 pointLightPositions[] = {
+		glm::vec3(0.7f,  0.2f,  2.0f),
+		glm::vec3(2.3f, -3.3f, -4.0f),
+		glm::vec3(-4.0f,  2.0f, -12.0f),
+		glm::vec3(0.0f,  0.0f, -3.0f)
+	};
 	// first, configure the cube's VAO (and VBO)
 	unsigned int VBO, cubeVAO;
 	glGenVertexArrays(1, &cubeVAO);
@@ -71,15 +94,16 @@ int main(int argc)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(shapes3D->Cube), shapes3D->Cube, GL_STATIC_DRAW);
 
 	glBindVertexArray(cubeVAO);
-
-	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	// normal attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-	// Need to add UVS back
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
+	shader.use();
+	shader.setInt("material.diffuse", 0);
+	shader.setInt("material.specular", 1);
 
 	unsigned int lightVAO;
 	glGenVertexArrays(1, &lightVAO);
@@ -87,37 +111,43 @@ int main(int argc)
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	// note that we update the lamp's position attribute's stride to reflect the updated buffer data
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
 	float rotation = 0.0f;
 	// If the window is not closed enable the engine loop
 	while (!Window_shouldClose())
 	{
+		//rotation += delta * 2.0f;
+		//lightPos = glm::vec3(glm::sin(rotation), glm::cos(rotation), 0);
 		processInput(Window);
 		Update_Window();
 
 		// be sure to activate shader when setting uniforms/drawing objects
 		shader.use();
-		shader.setVec3("light.position", lightPos);
 		shader.setVec3("viewPos", camera.Position);
-
-		// light properties
-		glm::vec3 lightColor;
-		lightColor.x = sin(glfwGetTime() * 2.0f);
-		lightColor.y = sin(glfwGetTime() * 0.7f);
-		lightColor.z = sin(glfwGetTime() * 1.3f);
-		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f); // decrease the influence
-		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // low influence
-		shader.setVec3("light.ambient", ambientColor);
-		shader.setVec3("light.diffuse", diffuseColor);
-		shader.setVec3("light.specular", glm::vec3( 1.0f, 1.0f, 1.0f));
-
-		// material properties
-		shader.setVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-		shader.setVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
-		shader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f)); // specular lighting doesn't have full effect on this object's material
 		shader.setFloat("material.shininess", 32.0f);
+
+		/*
+		   Here we set all the uniforms for the 5/6 types of lights we have. We have to set them manually and index
+		   the proper PointLight struct in the array to set each uniform variable. This can be done more code-friendly
+		   by defining light types as classes and set their values in there, or by using a more efficient uniform approach
+		   by using 'Uniform buffer objects', but that is something we'll discuss in the 'Advanced GLSL' tutorial.
+		*/
+		// directional light
+		shader.setVec3("dirLight.direction", glm::vec3( -0.2f, -1.0f, -0.3f));
+		shader.setVec3("dirLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+		shader.setVec3("dirLight.diffuse", glm::vec3(0.4f, 0.4f, 0.4f));
+		shader.setVec3("dirLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+		// point light 1
+		shader.setVec3("pointLights[0].position", lightPos);
+		shader.setVec3("pointLights[0].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+		shader.setVec3("pointLights[0].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+		shader.setVec3("pointLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		shader.setFloat("pointLights[0].constant", 1.0f);
+		shader.setFloat("pointLights[0].linear", 0.09);
+		shader.setFloat("pointLights[0].quadratic", 0.032);
+
 
 		// view/projection transformations
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)windowWidth / (float)windowHeight, 0.1f, 100.0f);
@@ -125,28 +155,45 @@ int main(int argc)
 		shader.setMat4("projection", projection);
 		shader.setMat4("view", view);
 
-		// world transformation (Cube)
+		// world transformation
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0));
 		shader.setMat4("model", model);
 
-		// render the cube
+		// bind diffuse map
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, diffuseMap.imageID);
+		// bind specular map
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, specularMap.imageID);
+
+		// render containers
 		glBindVertexArray(cubeVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		
+		for (unsigned int i = 0; i < 10; i++)
+		{
+			// calculate the model matrix for each object and pass it to shader before drawing
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, cubePositions[i]);
+			float angle = 20.0f * i;
+			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			shader.setMat4("model", model);
 
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 
-		// Lamp object
+		// also draw the lamp object(s)
 		lampShader.use();
 		lampShader.setMat4("projection", projection);
 		lampShader.setMat4("view", view);
+
+		// we now draw as many light bulbs as we have point lights.
+		glBindVertexArray(lightVAO);
+
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, lightPos);
-		model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
+		model = glm::scale(model, glm::vec3(0.2f)); // Make it a smaller cube
 		lampShader.setMat4("model", model);
-
-		glBindVertexArray(lightVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+
 	}
 
 	glDeleteVertexArrays(1, &cubeVAO);

@@ -36,6 +36,9 @@
     <ClInclude Include="Geometry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -52,7 +55,7 @@
     <None Include="Basic.shader">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="LightingShader.shader">
+    <None Include="BasicLightingShader.shader">
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="LightSource.shader">

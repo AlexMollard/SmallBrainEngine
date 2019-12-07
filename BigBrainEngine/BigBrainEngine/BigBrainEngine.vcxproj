@@ -72,12 +72,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Users\alexm\Documents\GitHub\SmallBrainEngine\BigBrainEngine\BigBrainEngine\Libs\assimp\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\alexm\Documents\GitHub\SmallBrainEngine\BigBrainEngine\BigBrainEngine\Libs\assimp\include\assimp\Compiler;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\Users\alexm\Documents\GitHub\SmallBrainEngine\BigBrainEngine\BigBrainEngine\Libs\assimp\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\alexm\Documents\GitHub\SmallBrainEngine\BigBrainEngine\BigBrainEngine\Libs\assimp\include\assimp\Compiler;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -176,13 +180,14 @@
     <ClInclude Include="BigBrainMath.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Geometry.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Basic.shader" />
-    <None Include="LightingShader.shader" />
+    <None Include="BasicLightingShader.shader" />
     <None Include="LightSource.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
