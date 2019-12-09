@@ -1,3 +1,3 @@
 ﻿  Main.cpp
-c:\users\alexm\documents\github\smallbrainengine\bigbrainengine\bigbrainengine\main.cpp(141): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-  BigBrainEngine.vcxproj -> C:\Users\alexm\Documents\GitHub\SmallBrainEngine\BigBrainEngine\Debug\BigBrainEngine.exe
+c:\users\s191067\desktop\smallbrainengine.git\trunk\bigbrainengine\bigbrainengine\main.cpp(167): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  BigBrainEngine.vcxproj -> C:\Users\s191067\Desktop\SmallBrainEngine.git\trunk\BigBrainEngine\Debug\BigBrainEngine.exe

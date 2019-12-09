@@ -16,7 +16,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 // Camera
-Camera camera(glm::vec3(2.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 2.0f, 6.0f));
 float lastX = xRES / 2.0f;
 float lastY = yRES / 2.0f;
 bool firstMouse = true;
@@ -27,7 +27,7 @@ glm::mat4 view;
 
 int windowWidth, windowHeight;
 
-int main(int argc)
+int main(int argc, char* argv[])
 {
 	// Check for Memory Leaks
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -56,32 +56,62 @@ int main(int argc)
 	// Outputting OpenGL Version and build
 	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 
-	glEnable(GL_LIGHTING);
+	Shader modelShader("MeshShader.shader");
+	Shader lightShader("LightSource.shader");
 
-	Shader ourShader("MeshShader.shader");
+	CustomTexture texture("ImageTestTwo.bmp");
+	CustomTexture texture2("ImageTestTwoB.bmp");
+	Model ourModel("C:/Users/s191067/Desktop/SmallBrainEngine.git/trunk/BigBrainEngine/BigBrainEngine/Models/Hex.fbx");
+	Model plane("C:/Users/s191067/Desktop/SmallBrainEngine.git/trunk/BigBrainEngine/BigBrainEngine/Models/stan/Stan Lee.obj");
 
-	Model ourModel("C:/Users/alexm/Documents/GitHub/SmallBrainEngine/BigBrainEngine/BigBrainEngine/Models/stan/Stan Lee.obj");
+	modelShader.use();
+	modelShader.setInt("texture1", 0);
 
+	lightShader.use();
+	lightShader.setInt("texture1", 0);
 
+	glm::vec3 lightPos(2.0f, 0.0f, 0.0f);
+	float rotation = 0.0f;
 	while (!Window_shouldClose())
 	{
 		processInput(Window);
 		Update_Window();
+		rotation += delta * 1.0f;
+		lightPos = glm::vec3(glm::sin(rotation) * 2, 0.5f, glm::cos(rotation) * 2);
 
-		ourShader.use();
-
-		// view/projection transformations
+		modelShader.use();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)windowWidth / (float)windowHeight, 0.1f, 100.0f);
 		glm::mat4 view = camera.GetViewMatrix();
-		ourShader.setMat4("projection", projection);
-		ourShader.setMat4("view", view);
+		modelShader.setMat4("projection", projection);
+		modelShader.setMat4("view", view);
 
-		// render the loaded model
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); 
-		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
-		ourShader.setMat4("model", model);
-		ourModel.Draw(ourShader);
+		// set light uniforms
+		modelShader.setVec3("viewPos", camera.Position);
+		modelShader.setVec3("lightPos", lightPos);
+
+		//plane
+		glm::mat4  model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.02f, 0.02f, 0.02f));
+		modelShader.setMat4("model", model);
+		plane.Draw(modelShader, texture);
+
+
+		// Light
+		lightShader.use();
+		lightShader.setMat4("projection", projection);
+		lightShader.setMat4("view", view);
+
+		// set light uniforms
+		lightShader.setVec3("viewPos", camera.Position);
+		lightShader.setVec3("lightPos", 100,100,100);
+
+		// Render Light
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, lightPos);
+		model = glm::scale(model, glm::vec3(0.005f, 0.005f, 0.005f));
+		modelShader.setMat4("model", model);
+		ourModel.Draw(lightShader, texture2);
 	}
 
 	// Destroy the window and free memory

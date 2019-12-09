@@ -1,4 +1,6 @@
 #include "BigBrainMath.h"
+#pragma warning (disable : 4996)
+#include <stdio.h>
 class CustomTexture
 {
 public:
@@ -11,34 +13,36 @@ public:
 	unsigned int imageSize;   // = width*height*3
 
 	// Actual RGB data
-	unsigned char* data;
+	unsigned char* data = nullptr;
 
 	CustomTexture(std::string imgDIR)
 	{
-		imageID = loadBMP_custom(imgDIR.c_str());
+		loadBMP_custom(imgDIR.c_str());
 		use();
 	}
 
 	~CustomTexture()
 	{
-		delete data;
+		//std::cout << "everything's bone3d" << std::endl;
+		if (data)
+			delete data;
 	}
 
-	GLuint loadBMP_custom(const char* imagepath)
+	void loadBMP_custom(const char* imagepath)
 	{
 		// Open the file
 		FILE* file = fopen(imagepath, "rb");
-		if (!file) { printf("Image could not be opened\n"); return 0; }
+		if (!file) { printf("Image could not be opened\n"); return; }
 
 		// test if it is a bmp file
 		if (fread(header, 1, 54, file) != 54) { // If not 54 bytes read : problem
 			printf("Not a correct BMP file\n");
-			return false;
+			return;
 		}
 
 		if (header[0] != 'B' || header[1] != 'M') {
 			printf("Not a correct BMP file\n");
-			return 0;
+			return;
 		}
 
 		// Read ints from the byte array
@@ -61,26 +65,28 @@ public:
 		fclose(file);
 
 		// Create one OpenGL texture
-		GLuint textureID;
-		glGenTextures(1, &textureID);
+		glGenTextures(1, &imageID);
 
-		return textureID;
+		glBindTexture(GL_TEXTURE_2D, imageID);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 	}
 
 	void use()
 	{
 		// "Bind" the newly created texture : all future texture functions will modify this texture
-		glGenTextures(1, &imageID);
+		//glGenTextures(1, &imageID);
 		glBindTexture(GL_TEXTURE_2D, imageID);
 
 		// Give the image to OpenGL
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		
 	}
 
 	GLuint getID()

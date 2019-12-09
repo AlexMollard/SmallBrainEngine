@@ -36,10 +36,10 @@ int Window_intit(int width, int height, char* name)
 	glfwMakeContextCurrent(Window);
 
 	// Allow GPU to not draw vert over other verts
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
 	glEnable(GL_DEPTH_TEST);
-	//glDepthFunc(GL_LESS);
+	glDepthFunc(GL_LESS);
 
 	return 1;
 }
