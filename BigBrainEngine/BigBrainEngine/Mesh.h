@@ -2,7 +2,7 @@
 #define MESH_H
 #include "BigBrainMath.h"
 #include "Shader.h"
-
+#include "Texture.h"
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -21,12 +21,6 @@ struct Vertex {
 	glm::vec3 Tangent;
 	// bitangent
 	glm::vec3 Bitangent;
-};
-
-struct Texture {
-	unsigned int id;
-	string type;
-	string path;
 };
 
 class Mesh {
@@ -48,7 +42,7 @@ public:
 	}
 
 	// render the mesh
-	void Draw(Shader shader,CustomTexture& texture)
+	void Draw(Texture& texture)
 	{
 		// draw mesh
 		glBindVertexArray(VAO);
@@ -56,9 +50,6 @@ public:
 		glBindTexture(GL_TEXTURE_2D, texture.imageID);
 		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
-
-		// always good practice to set everything back to defaults once configured.
-		//glActiveTexture(GL_TEXTURE0);
 	}
 
 private:

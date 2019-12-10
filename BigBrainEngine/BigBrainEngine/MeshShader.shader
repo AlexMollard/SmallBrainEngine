@@ -17,7 +17,7 @@ uniform mat4 model;
 
 void main()
 {
-	outData.FragPos = vec3(model[3][0], model[3][1], model[3][2]);
+	outData.FragPos = aPos;
 	outData.Normal = aNormal;
 	outData.TexCoords = aTexCoords;
 	gl_Position = projection * view * model * vec4(aPos, 1.0);

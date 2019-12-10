@@ -1,5 +1,5 @@
-#include <stdlib.h>
 #include "BigBrainMath.h"
+#include <stdlib.h>
 
 // Main Window
 GLFWwindow *Window;

@@ -3,10 +3,10 @@
 
 #include "BigBrainMath.h"
 #include "Mesh.h"
-#include "Libs/stb/stb_image.h"
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include "Texture.h"
 
 using namespace std;
 
@@ -25,10 +25,10 @@ public:
 	}
 
 	// draws the model, and thus all its meshes
-	void Draw(Shader shader, CustomTexture& texture)
+	void Draw(Shader& shader, Texture& texture)
 	{
 		for (unsigned int i = 0; i < meshes.size(); i++)
-			meshes[i].Draw(shader, texture);
+			meshes[i].Draw(texture);
 	}
 
 private:

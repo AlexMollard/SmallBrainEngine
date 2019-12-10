@@ -1,9 +1,11 @@
 #define STB_IMAGE_IMPLEMENTATION
+
 #include "window.h"
 #include "Shader.h"
-#include "CustomTexture.h"
+#include "Texture.h"
 #include "Camera.h"
 #include "Model.h"
+#include "GameObject.h"
 
 // Default screen res 
 #define xRES 1000
@@ -59,61 +61,55 @@ int main(int argc, char* argv[])
 	Shader modelShader("MeshShader.shader");
 	Shader lightShader("LightSource.shader");
 
-	CustomTexture texture("ImageTestTwo.bmp");
-	CustomTexture texture2("ImageTestTwoB.bmp");
-	Model ourModel("C:/Users/s191067/Desktop/SmallBrainEngine.git/trunk/BigBrainEngine/BigBrainEngine/Models/Hex.fbx");
-	Model plane("C:/Users/s191067/Desktop/SmallBrainEngine.git/trunk/BigBrainEngine/BigBrainEngine/Models/stan/Stan Lee.obj");
+	Texture texture("ImageTestTwo.bmp");
+	Texture texture2("ImageTestTwoB.bmp");
 
-	modelShader.use();
-	modelShader.setInt("texture1", 0);
+	Model ourModel("C:/Users/alexm/Desktop/SmallBrainEngine.git/trunk/BigBrainEngine/BigBrainEngine/Models/Hex.fbx");
+	Model plane("C:/Users/alexm/Desktop/SmallBrainEngine.git/trunk/BigBrainEngine/BigBrainEngine/Models/Plane.obj");
 
-	lightShader.use();
-	lightShader.setInt("texture1", 0);
+	GameObject lightObject(&ourModel, &texture, &lightShader);
+	GameObject* planeObject[10];
 
-	glm::vec3 lightPos(2.0f, 0.0f, 0.0f);
+	for (int i = 0; i < 10; i++)
+	{
+		planeObject[i] = new GameObject(&plane, &texture2, &modelShader);
+		planeObject[i]->SetPostition(glm::vec3(i * 2, 0, 0));
+	}
+
+	lightObject.SetScale(glm::vec3(0.005f, 0.005f, 0.005f));
+	glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
 	float rotation = 0.0f;
+
 	while (!Window_shouldClose())
 	{
 		processInput(Window);
 		Update_Window();
-		rotation += delta * 1.0f;
-		lightPos = glm::vec3(glm::sin(rotation) * 2, 0.5f, glm::cos(rotation) * 2);
 
-		modelShader.use();
+		rotation += delta * 1.0f;
+		lightPos = glm::vec3(glm::sin(rotation), 0.25f, glm::cos(rotation));
+
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)windowWidth / (float)windowHeight, 0.1f, 100.0f);
 		glm::mat4 view = camera.GetViewMatrix();
-		modelShader.setMat4("projection", projection);
-		modelShader.setMat4("view", view);
 
-		// set light uniforms
+		//plane
+		modelShader.use();
 		modelShader.setVec3("viewPos", camera.Position);
 		modelShader.setVec3("lightPos", lightPos);
 
-		//plane
-		glm::mat4  model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.02f, 0.02f, 0.02f));
-		modelShader.setMat4("model", model);
-		plane.Draw(modelShader, texture);
+		for (int i = 0; i < 10; i++)
+		{
+			planeObject[i]->Draw(&projection, &view);
+		}
 
-
-		// Light
-		lightShader.use();
-		lightShader.setMat4("projection", projection);
-		lightShader.setMat4("view", view);
-
-		// set light uniforms
-		lightShader.setVec3("viewPos", camera.Position);
-		lightShader.setVec3("lightPos", 100,100,100);
-
-		// Render Light
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, lightPos);
-		model = glm::scale(model, glm::vec3(0.005f, 0.005f, 0.005f));
-		modelShader.setMat4("model", model);
-		ourModel.Draw(lightShader, texture2);
+		// LightObject
+		lightObject.SetPostition(lightPos);
+		lightObject.Draw(&projection, &view);
 	}
 
+	for (int i = 0; i < 10; i++)
+	{
+		delete planeObject[i];
+	}
 	// Destroy the window and free memory
 	Window_destroy();
 
