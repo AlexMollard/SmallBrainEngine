@@ -1,17 +1,18 @@
 #pragma once
 #include "BigBrainMath.h"
 #include "Model.h"
+#include "Material.h"
 class GameObject
 {
 public:
-	GameObject(Model* newModel, Texture* newTexture, Shader* newShader);
+	GameObject(Model& newModel, Material& newMaterial);
 	~GameObject();
 	
-	Model* model;
-	Shader* shader;
-	Texture* texture;
+	Model* model = nullptr;
+	Material* material = nullptr;
 
 	glm::vec3 postition = glm::vec3(0);
+	glm::vec2 UvPos = glm::vec2(0.0f,0.0f);
 	glm::vec3 scale = glm::vec3(1);;
 	glm::mat4 transform = glm::mat4(1);;
 
@@ -27,6 +28,6 @@ public:
 	glm::mat4 GetModel();
 
 	void Update(float deltaTime);
-	void Draw(glm::mat4* projection, glm::mat4* view);
+	void Draw(glm::mat4& projection, glm::mat4& view);
 };
 

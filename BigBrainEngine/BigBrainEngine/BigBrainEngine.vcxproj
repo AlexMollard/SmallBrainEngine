@@ -170,14 +170,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameObjectManager.cpp" />
+    <ClCompile Include="GraphicsManager.cpp" />
     <ClCompile Include="Main.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\OpenGL\glew\include;C:\OpenGL\glfw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\OpenGL\glew\include;C:\OpenGL\glfw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <ClCompile Include="Material.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BigBrainMath.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="GameObjectManager.h" />
+    <ClInclude Include="GraphicsManager.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Geometry.h" />
@@ -187,10 +193,10 @@
     <ClInclude Include="window.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Basic.shader" />
-    <None Include="BasicLightingShader.shader" />
-    <None Include="LightSource.shader" />
-    <None Include="MeshShader.shader" />
+    <None Include="BasicLighting_frag.shader" />
+    <None Include="BasicLighting_vert.shader" />
+    <None Include="LightSource_vert.shader" />
+    <None Include="LightSource_frag.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

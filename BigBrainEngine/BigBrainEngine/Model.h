@@ -25,10 +25,10 @@ public:
 	}
 
 	// draws the model, and thus all its meshes
-	void Draw(Shader& shader, Texture& texture)
+	void Draw()
 	{
 		for (unsigned int i = 0; i < meshes.size(); i++)
-			meshes[i].Draw(texture);
+			meshes[i].Draw();
 	}
 
 private:

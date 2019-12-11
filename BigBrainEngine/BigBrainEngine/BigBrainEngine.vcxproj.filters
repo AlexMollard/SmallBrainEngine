@@ -45,6 +45,15 @@
     <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GameObjectManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -53,18 +62,27 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GameObjectManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Basic.shader">
+    <None Include="BasicLighting_vert.shader">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="BasicLightingShader.shader">
+    <None Include="BasicLighting_frag.shader">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="LightSource.shader">
+    <None Include="LightSource_frag.shader">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="MeshShader.shader">
+    <None Include="LightSource_vert.shader">
       <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>
