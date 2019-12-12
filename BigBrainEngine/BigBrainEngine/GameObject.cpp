@@ -1,9 +1,9 @@
 #include "GameObject.h"
 
-GameObject::GameObject(Model& newModel, Material& newMaterial)
+GameObject::GameObject(Model* newModel, Material* newMaterial)
 {
-	model = &newModel;
-	material = &newMaterial;
+	model = newModel;
+	material = newMaterial;
 }
 
 GameObject::~GameObject()
@@ -53,7 +53,7 @@ void GameObject::Update(float deltaTime)
 {
 }
 
-void GameObject::Draw(glm::mat4& projection, glm::mat4& view)
+void GameObject::Draw()
 {
 	material->shader->setVec2("UvPos", UvPos);
 	material->shader->setMat4("model", transform);

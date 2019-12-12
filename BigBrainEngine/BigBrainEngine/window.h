@@ -38,6 +38,9 @@ int Window_intit(int width, int height, char* name)
 	// Allow GPU to not draw vert over other verts
 	//glEnable(GL_CULL_FACE);
 	//glCullFace(GL_BACK);
+	glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 

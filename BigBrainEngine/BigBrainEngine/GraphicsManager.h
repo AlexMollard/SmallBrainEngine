@@ -16,16 +16,16 @@ public:
 	Model* LastModel = nullptr;
 
 	Shader GetShader(int shaderIndex);
-	void AddShader(Shader& newShader);
-	bool SetShader(Shader& newShader);
+	void AddShader(Shader* newShader);
+	bool SetShader(Shader* newShader);
 
 	Material GetMaterial(int materialIndex);
-	void AddMaterial(Material& newMaterial);
-	bool SetMaterial(Material& newMaterial);
+	void AddMaterial(Material* newMaterial);
+	bool SetMaterial(Material* newMaterial);
 
 	Model GetModel(int modelIndex);
-	void AddModel(Model& newModel);
-	bool SetModel(Model& newModel);
+	void AddModel(Model* newModel);
+	bool SetModel(Model* newModel);
 
 };
 

@@ -1,6 +1,8 @@
-﻿  Main.cpp
-c:\users\alexm\desktop\smallbrainengine.git\trunk\bigbrainengine\bigbrainengine\main.cpp(88): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-c:\users\alexm\desktop\smallbrainengine.git\trunk\bigbrainengine\bigbrainengine\main.cpp(89): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\alexm\desktop\smallbrainengine.git\trunk\bigbrainengine\bigbrainengine\main.cpp(135): warning C4018: '<': signed/unsigned mismatch
-c:\users\alexm\desktop\smallbrainengine.git\trunk\bigbrainengine\bigbrainengine\main.cpp(192): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+﻿  GameController.cpp
+c:\users\alexm\desktop\smallbrainengine.git\trunk\bigbrainengine\bigbrainengine\gamecontroller.cpp(86): warning C4018: '<': signed/unsigned mismatch
+c:\users\alexm\desktop\smallbrainengine.git\trunk\bigbrainengine\bigbrainengine\gamecontroller.cpp(116): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
   BigBrainEngine.vcxproj -> C:\Users\alexm\Desktop\SmallBrainEngine.git\trunk\BigBrainEngine\Debug\BigBrainEngine.exe

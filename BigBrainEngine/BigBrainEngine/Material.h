@@ -17,7 +17,7 @@ struct PointLight {
 class Material
 {
 public:
-	Material(Shader* matShader, Texture* matDiffuse, Texture* matSpecular = nullptr, float matShine = 0.3f);
+	Material(Shader* matShader, Texture* matDiffuse = nullptr, Texture* matSpecular = nullptr, float matShine = 0.3f);
 	~Material();
 
 	Shader* shader = nullptr;

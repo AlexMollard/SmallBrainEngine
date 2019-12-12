@@ -2,30 +2,30 @@
 
 
 
-GameObjectManager::GameObjectManager(GraphicsManager& newGraphicManager)
+GameObjectManager::GameObjectManager(GraphicsManager* newGraphicManager)
 {
-	graphicManager = &newGraphicManager;
+	graphicManager = newGraphicManager;
 }
 
 GameObjectManager::~GameObjectManager()
 {
 }
 
-void GameObjectManager::Draw(glm::mat4 &projection, glm::mat4 &view)
+void GameObjectManager::Draw(glm::mat4 *projection, glm::mat4 *view)
 {
 	bool firstFrame = true;
 	for (int i = 0; i < gameObjects.size(); i++)
 	{
 		Shader* currentShader = gameObjects[i]->material->shader;
-		if (graphicManager->SetShader(*currentShader) || firstFrame)
+		if (graphicManager->SetShader(currentShader) || firstFrame)
 		{
-			currentShader->setMat4("projection", projection);
-			currentShader->setMat4("view", view);
+			currentShader->setMat4("projection", *projection);
+			currentShader->setMat4("view", *view);
 			firstFrame = false;
 		}
 
-		graphicManager->SetMaterial(*gameObjects[i]->material);
-		gameObjects[i]->Draw(projection, view);
+		graphicManager->SetMaterial(gameObjects[i]->material);
+		gameObjects[i]->Draw();
 	}
 }
 
@@ -37,7 +37,7 @@ void GameObjectManager::Update(float deltaTime)
 	}
 }
 
-void GameObjectManager::AddObject(GameObject &NewGameObject)
+void GameObjectManager::AddObject(GameObject *NewGameObject)
 {
-	gameObjects.push_back(&NewGameObject);
+	gameObjects.push_back(NewGameObject);
 }

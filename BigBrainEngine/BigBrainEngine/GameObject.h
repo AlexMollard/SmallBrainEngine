@@ -5,7 +5,7 @@
 class GameObject
 {
 public:
-	GameObject(Model& newModel, Material& newMaterial);
+	GameObject(Model* newModel, Material* newMaterial);
 	~GameObject();
 	
 	Model* model = nullptr;
@@ -28,6 +28,6 @@ public:
 	glm::mat4 GetModel();
 
 	void Update(float deltaTime);
-	void Draw(glm::mat4& projection, glm::mat4& view);
+	void Draw();
 };
 

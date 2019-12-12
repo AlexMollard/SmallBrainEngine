@@ -16,6 +16,24 @@
     <Filter Include="Resource Files\shaders">
       <UniqueIdentifier>{b306c9e6-5e4b-4e81-b8cf-a8436a85710e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\shaders\BasicLighting">
+      <UniqueIdentifier>{c3eff570-7560-464c-b5bf-c2f7b3e6ca07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaders\LighSource">
+      <UniqueIdentifier>{57ec0c4a-66c1-4620-940a-4497596bc955}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaders\Blinn">
+      <UniqueIdentifier>{b03cf837-1335-4979-a820-39702b5289e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaders\PointShadow">
+      <UniqueIdentifier>{7364ace7-2a33-40c1-a0f2-4eeed097f4a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaders\TextShader">
+      <UniqueIdentifier>{6db361d1-675a-49b0-be1f-c5085655e969}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaders\Point Shadow Depth">
+      <UniqueIdentifier>{b24773b0-c829-4395-a335-75c6fba9a675}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="window.h">
@@ -54,6 +72,15 @@
     <ClInclude Include="GraphicsManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GameController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HexStuff.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TextRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -71,19 +98,52 @@
     <ClCompile Include="GraphicsManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GameController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TextRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="BasicLighting_vert.shader">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
     <None Include="BasicLighting_frag.shader">
-      <Filter>Resource Files\shaders</Filter>
+      <Filter>Resource Files\shaders\BasicLighting</Filter>
+    </None>
+    <None Include="BasicLighting_vert.shader">
+      <Filter>Resource Files\shaders\BasicLighting</Filter>
     </None>
     <None Include="LightSource_frag.shader">
-      <Filter>Resource Files\shaders</Filter>
+      <Filter>Resource Files\shaders\LighSource</Filter>
     </None>
     <None Include="LightSource_vert.shader">
-      <Filter>Resource Files\shaders</Filter>
+      <Filter>Resource Files\shaders\LighSource</Filter>
+    </None>
+    <None Include="Blinn_vert.shader">
+      <Filter>Resource Files\shaders\Blinn</Filter>
+    </None>
+    <None Include="Blinn_frag.shader">
+      <Filter>Resource Files\shaders\Blinn</Filter>
+    </None>
+    <None Include="PointShadow_frag.shader">
+      <Filter>Resource Files\shaders\PointShadow</Filter>
+    </None>
+    <None Include="PointShadow_vert.shader">
+      <Filter>Resource Files\shaders\PointShadow</Filter>
+    </None>
+    <None Include="TextShader_frag.shader">
+      <Filter>Resource Files\shaders\TextShader</Filter>
+    </None>
+    <None Include="TextShader_vert.shader">
+      <Filter>Resource Files\shaders\TextShader</Filter>
+    </None>
+    <None Include="PointShadowDepth_vert.shader">
+      <Filter>Resource Files\shaders\Point Shadow Depth</Filter>
+    </None>
+    <None Include="PointShadowDepth_frag.shader">
+      <Filter>Resource Files\shaders\Point Shadow Depth</Filter>
+    </None>
+    <None Include="PointShadowDepth_geo.shader">
+      <Filter>Resource Files\shaders\Point Shadow Depth</Filter>
     </None>
   </ItemGroup>
 </Project>

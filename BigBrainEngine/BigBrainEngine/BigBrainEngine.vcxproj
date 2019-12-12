@@ -96,14 +96,14 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\BigBrainEngine\Libs\fmod\inc;..\BigBrainEngine\Libs\assimp\include;..\BigBrainEngine\Dependencies\glew\include;..\BigBrainEngine\Dependencies\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\BigBrainEngine\Libs\fmod\inc;..\BigBrainEngine\Libs\assimp\include;..\BigBrainEngine\Dependencies\glew\include;..\BigBrainEngine\Dependencies\glfw\include;..\BigBrainEngine\Libs\freetype\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\BigBrainEngine\Libs\fmod\lib\x86;..\BigBrainEngine\Libs\assimp\Lib;..\BigBrainEngine\Dependencies\glew\lib\Release\Win32;..\BigBrainEngine\Dependencies\glfw\lib-vc2017;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;assimp-vc141-mtd.lib;winmm.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\BigBrainEngine\Libs\fmod\lib\x86;..\BigBrainEngine\Libs\assimp\Lib;..\BigBrainEngine\Dependencies\glew\lib\Release\Win32;..\BigBrainEngine\Dependencies\glfw\lib-vc2017;..\BigBrainEngine\Libs\freetype\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;assimp-vc141-mtd.lib;winmm.lib;fmod_vc.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -137,7 +137,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\BigBrainEngine\Libs\fmod\inc;..\BigBrainEngine\Libs\assimp\include;..\BigBrainEngine\Dependencies\glew\include;..\BigBrainEngine\Dependencies\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\BigBrainEngine\Libs\fmod\inc;..\BigBrainEngine\Libs\assimp\include;..\BigBrainEngine\Dependencies\glew\include;..\BigBrainEngine\Dependencies\glfw\include;..\BigBrainEngine\Libs\freetype\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
@@ -145,8 +145,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\BigBrainEngine\Libs\fmod\lib\x86;..\BigBrainEngine\Libs\assimp\Lib;..\BigBrainEngine\Dependencies\glew\lib\Release\Win32;..\BigBrainEngine\Dependencies\glfw\lib-vc2017;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;assimp-vc141-mtd.lib;winmm.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\BigBrainEngine\Libs\fmod\lib\x86;..\BigBrainEngine\Libs\assimp\Lib;..\BigBrainEngine\Dependencies\glew\lib\Release\Win32;..\BigBrainEngine\Dependencies\glfw\lib-vc2017;..\BigBrainEngine\Libs\freetype\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;assimp-vc141-mtd.lib;winmm.lib;fmod_vc.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -169,6 +169,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameController.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObjectManager.cpp" />
     <ClCompile Include="GraphicsManager.cpp" />
@@ -177,13 +178,17 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\OpenGL\glew\include;C:\OpenGL\glfw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="TextRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BigBrainMath.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="GameController.h" />
     <ClInclude Include="GameObjectManager.h" />
     <ClInclude Include="GraphicsManager.h" />
+    <ClInclude Include="HexStuff.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="TextRenderer.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Geometry.h" />
@@ -197,6 +202,15 @@
     <None Include="BasicLighting_vert.shader" />
     <None Include="LightSource_vert.shader" />
     <None Include="LightSource_frag.shader" />
+    <None Include="Blinn_frag.shader" />
+    <None Include="Blinn_vert.shader" />
+    <None Include="PointShadowDepth_frag.shader" />
+    <None Include="PointShadowDepth_geo.shader" />
+    <None Include="PointShadowDepth_vert.shader" />
+    <None Include="PointShadow_frag.shader" />
+    <None Include="PointShadow_vert.shader" />
+    <None Include="TextShader_frag.shader" />
+    <None Include="TextShader_vert.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
