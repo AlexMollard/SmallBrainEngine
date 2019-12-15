@@ -26,7 +26,7 @@ GameController::GameController(Camera* camera)
 	graphicManager->AddShader(lightShader);
 	graphicManager->AddShader(textShader);
 
-	texture = new Texture("ImageTestTwo.bmp");
+	texture = new Texture("ImageTestOne.bmp");
 	texture2 = new Texture("ImageTestTwoB.bmp");
 
 	planeMat = new Material(lightingShader, texture2);
@@ -78,6 +78,8 @@ GameController::GameController(Camera* camera)
 	lightingShader->use();
 	lightingShader->setInt("diffuseTexture", 0);
 	lightingShader->setInt("depthMap", 1);
+	lightingShader->setInt("shadows", 1);
+
 }
 
 
@@ -153,7 +155,6 @@ void GameController::Draw(glm::mat4* projection, glm::mat4* view)
 	// set lighting uniforms
 	lightingShader->setVec3("lightPos", lightPos);
 	lightingShader->setVec3("viewPos", camera->Position);
-	lightingShader->setInt("shadows", 1); // enable/disable shadows by pressing 'SPACE'
 	lightingShader->setFloat("far_plane", far_plane);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture->imageID);
@@ -165,9 +166,10 @@ void GameController::Draw(glm::mat4* projection, glm::mat4* view)
 	//gameObjectManager->Draw(projection, view);
 
 	// Displaying FPS
-	std::string fps = to_string(FPS);
+	std::string fps = "FPS: ";
+	fps += to_string(FPS);
 	graphicManager->SetMaterial(textMat);
-	textRenderer->RenderText(textShader, fps, 20.0f, 30.0f, 1.5f, glm::vec3(0.5, 0.8f, 0.2f));
+	textRenderer->RenderText(textShader, fps, 20.0f, 30.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
 }
 
 void GameController::GetFPS()
